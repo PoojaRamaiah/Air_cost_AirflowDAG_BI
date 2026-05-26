@@ -1,0 +1,14 @@
+config/config.yaml
+config/snowflake_config.yaml
+.env
+*.pyc
+__pycache__/
+.pytest_cache/
+logs/
+dbt_project/target/
+dbt_project/dbt_packages/
+dbt_project/logs/
+.venv/
+venv/
+*.egg-info/
+dist/

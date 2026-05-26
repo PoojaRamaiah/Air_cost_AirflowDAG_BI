@@ -1,0 +1,73 @@
+version: 2
+
+sources:
+  - name: raw
+    database: LOGISTICS_DW
+    schema: RAW
+    tables:
+      - name: raw_shipments
+        description: "Raw express parcel shipments extracted from MySQL"
+        columns:
+          - name: shipment_id
+            tests: [not_null, unique]
+          - name: lane_code
+            tests: [not_null]
+          - name: chargeable_weight_kg
+            tests: [not_null]
+
+      - name: raw_lane_rates
+        description: "Lane rate slabs extracted from MySQL"
+        columns:
+          - name: lane_code
+            tests: [not_null]
+          - name: rate_per_kg
+            tests: [not_null]
+
+models:
+  - name: stg_shipments
+    description: "Cleaned shipment transactions — express parcels only"
+    columns:
+      - name: shipment_id
+        tests: [not_null, unique]
+      - name: lane_code
+        tests: [not_null]
+      - name: chargeable_weight_kg
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: ">= 0"
+
+  - name: stg_lane_rates
+    description: "Deduplicated lane rate slabs — latest effective rate per slab"
+    columns:
+      - name: lane_code
+        tests: [not_null]
+      - name: rate_per_kg
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: "> 0"
+
+  - name: int_shipment_costs
+    description: "Each shipment joined to its matching rate slab with cost calculated"
+    columns:
+      - name: shipment_id
+        tests: [not_null, unique]
+      - name: total_air_cost
+        tests:
+          - dbt_utils.expression_is_true:
+              expression: ">= 0"
+
+  - name: mart_air_cost_by_lane
+    description: >
+      Final aggregated report: air cost per lane per month.
+      Primary table for dashboards and reporting.
+    columns:
+      - name: lane_code
+        tests: [not_null]
+      - name: total_air_cost
+        tests:
+          - dbt_utils.expression_is_true:
+              expression: ">= 0"
+      - name: unmatched_slab_count
+        description: "Shipments that had no matching rate slab — should be 0 in healthy runs"

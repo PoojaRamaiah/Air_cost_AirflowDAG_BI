@@ -1,0 +1,27 @@
+# config/config.yaml.example
+# Copy this to config.yaml and fill in your values
+# NEVER commit config.yaml to git — it's in .gitignore
+
+mysql:
+  host: "localhost"
+  port: 3306
+  database: "logistics_db"
+  user: "YOUR_MYSQL_USER"
+  password: "YOUR_MYSQL_PASSWORD"
+  tables:
+    - shipments
+    - lane_rates
+  extract_days_back: 30        # How many days of data to extract per run
+
+snowflake:
+  account: "YOUR_ACCOUNT.snowflakecomputing.com"
+  user: "YOUR_SNOWFLAKE_USER"
+  password: "YOUR_SNOWFLAKE_PASSWORD"
+  role: "TRANSFORMER"
+  warehouse: "COMPUTE_WH"
+  database: "LOGISTICS_DW"
+  schema: "RAW"
+
+pipeline:
+  batch_size: 10000            # Rows per insert batch
+  log_level: "INFO"

@@ -1,0 +1,29 @@
+# dbt_project/profiles.yml
+# Use env vars in production. Never commit real credentials.
+
+air_cost_lane:
+  target: dev
+  outputs:
+    dev:
+      type: snowflake
+      account: "{{ env_var('SNOWFLAKE_ACCOUNT') }}"
+      user: "{{ env_var('SNOWFLAKE_USER') }}"
+      password: "{{ env_var('SNOWFLAKE_PASSWORD') }}"
+      role: TRANSFORMER
+      database: LOGISTICS_DW
+      warehouse: COMPUTE_WH
+      schema: STAGING
+      threads: 4
+      client_session_keep_alive: false
+
+    prod:
+      type: snowflake
+      account: "{{ env_var('SNOWFLAKE_ACCOUNT') }}"
+      user: "{{ env_var('SNOWFLAKE_USER') }}"
+      password: "{{ env_var('SNOWFLAKE_PASSWORD') }}"
+      role: TRANSFORMER
+      database: LOGISTICS_DW
+      warehouse: COMPUTE_WH
+      schema: STAGING
+      threads: 8
+      client_session_keep_alive: false
